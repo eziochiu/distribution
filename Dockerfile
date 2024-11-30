@@ -1,38 +1,54 @@
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
-RUN sed -i 's@http://archive.ubuntu.com@http://mirrors.ustc.edu.cn@g' /etc/apt/sources.list && \
-    sed -i 's@http://security.ubuntu.com@http://mirrors.ustc.edu.cn@g' /etc/apt/sources.list
-
-RUN apt-get update && \
-	dpkg --add-architecture i386 && \
-	apt-get update
-
-RUN apt-get install -y libc6:i386 libncurses6:i386 libstdc++6:i386
-
-RUN apt-get install -y build-essential cmake git libncurses6 libncurses-dev \
-	libssl-dev mercurial texinfo zip default-jre imagemagick
-
-RUN apt-get install -y subversion autoconf automake bison scons \
-	libglib2.0-dev bc mtools u-boot-tools flex wget
-
-RUN apt-get install -y cpio dosfstools libtool rsync device-tree-compiler \
-	gettext locales graphviz python3
-
-RUN apt-get install -y gcc-multilib g++-multilib
-
-RUN apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN dpkg --add-architecture i386 && \
+	apt-get update && \
+	apt-get install -y -o APT::Immediate-Configure=0 libc6:i386 \
+		libncurses6:i386 \
+		libstdc++6:i386 \
+		build-essential \
+		cmake \
+		git \
+		libncurses6 \
+		libncurses-dev \
+		libssl-dev \
+		mercurial \
+		texinfo \
+		zip \
+		pigz \
+		default-jre \
+		imagemagick \
+		subversion \
+		autoconf \
+		automake \
+		bison \
+		scons \
+		libglib2.0-dev \
+		bc \
+		mtools \
+		u-boot-tools \
+		flex \
+		wget \
+		cpio \
+		dosfstools \
+		libtool \
+		rsync \
+		device-tree-compiler \
+		gettext \
+		locales \
+		graphviz \
+		python3 \
+		gcc-multilib \
+		g++-multilib \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Set locale
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-    sed -i -e 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/' /etc/locale.gen && \
-    locale-gen
-
-ENV LANG zh_CN.UTF-8
-ENV LANGUAGE zh_CN:zh
-ENV LC_ALL zh_CN.UTF-8
-ENV TZ Asia/Shanghai
+	locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+ENV TZ Europe/Paris
 
 # Workaround host-tar configure error
 ENV FORCE_UNSAFE_CONFIGURE 1
