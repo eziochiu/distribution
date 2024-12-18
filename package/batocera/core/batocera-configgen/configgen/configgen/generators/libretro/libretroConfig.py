@@ -211,8 +211,13 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
         retroarchConfig['vrr_runloop_enable'] = 'false'
 
     # required at least for vulkan (to get the correct resolution)
-    retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
-    retroarchConfig['video_fullscreen_y'] = gameResolution["height"]
+    # For rotated screens like the rg28xx
+    if gameResolution["width"] < gameResolution["height"]:
+        retroarchConfig['video_fullscreen_x'] = gameResolution["height"]
+        retroarchConfig['video_fullscreen_y'] = gameResolution["width"]
+    else:
+        retroarchConfig['video_fullscreen_x'] = gameResolution["width"]
+        retroarchConfig['video_fullscreen_y'] = gameResolution["height"]
 
     retroarchConfig['video_black_frame_insertion'] = 'false'    # don't use anymore this value while it doesn't allow the shaders to work
     retroarchConfig['pause_nonactive'] = 'false'                # required at least on x86 x86_64 otherwise, the game is paused at launch
@@ -862,6 +867,11 @@ def createLibretroConfig(generator: Generator, system: Emulator, controllers: Co
     else:
         retroarchConfig['video_scale_integer'] = 'false'
 
+    if system.isOptSet('integeroverscale') and system.getOptBoolean('integeroverscale') == True:
+        retroarchConfig['video_scale_integer_overscale'] = 'true'
+    else:
+        retroarchConfig['video_scale_integer_overscale'] = 'false'
+        
     # Netplay management
     if 'netplay.mode' in system.config and system.config['netplay.mode'] in systemNetplayModes:
         # Security : hardcore mode disables save states, which would kill netplay
